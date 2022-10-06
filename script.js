@@ -13,8 +13,25 @@
 window.addEventListener("load", function () {
 
     // 'Fetching Planetary Data' goes below:
-    fetch().then(function (response) {
-        /* This block of code shows how to format the HTML once you fetch some planetary JSON!
+    fetch("https://handlers.education.launchcode.org/static/planets.json").then(function (response) {
+        response.json().then( function(json) {
+            const div = document.getElementById("missionTarget");
+            function getRandomInt(max) {
+                return Math.floor(Math.random() * max);
+            }
+            ind = getRandomInt(json.length);
+            div.innerHTML = `
+            <h2>Mission Destination</h2>
+            <ol>
+                <li>Name: ${json[ind].name}</li>
+                <li>Diameter: ${json[ind].diameter}</li>
+                <li>Star: ${json[ind].star}</li>
+                <li>Distance from Earth: ${json[ind].distance}</li>
+                <li>Number of Moons: ${json[ind].moons}</li>
+            </ol>
+            <img src="${json[ind].image}">`
+        });
+    /* This block of code shows how to format the HTML once you fetch some planetary JSON!
         <h2>Mission Destination</h2>
         <ol>
             <li>Name: ${}</li>
@@ -36,37 +53,49 @@ window.addEventListener("load", function () {
         let copilotName = document.querySelector("input[name = copilotName]");
         let fuelLevel = document.querySelector("input[name = fuelLevel]");
         let cargoMass = document.querySelector("input[name = cargoMass]");
+        let launchStatus = document.getElementById("launchStatus");
+        let faultyItems = document.querySelector("#faultyItems");
+
         if (pilotName.value === "" || copilotName.value === "" || fuelLevel.value === "" || cargoMass.value === "") {
             alert("All fields are required!");
             event.preventDefault();
-        }
-        if (!isNaN(pilotName.value)) {
-            alert("Invalid input. Please write a name.");
+        } else if (!isNaN(pilotName.value) || !isNaN(copilotName.value) || isNaN(fuelLevel.value) || isNaN(cargoMass.value)) {
+            alert("Invalid input. Please fill form with valid data.");
             event.preventDefault();
+        } else {
+            if (fuelLevel.value < 10000 && cargoMass.value > 10000) {
+                document.getElementById("fuelStatus").innerHTML = "Fuel level too low for launch";
+                document.getElementById("cargoStatus").innerHTML = "Cargo mass too heavy for launch";
+                launchStatus.innerHTML = "Shuttle Not Ready for Launch";
+                launchStatus.style.color = "#C7254E";
+                event.preventDefault();
+                faultyItems.setAttribute("style", "visibility: visible"); 
+
+            } else if (cargoMass.value > 10000) {
+                document.getElementById("cargoStatus").innerHTML = "Cargo mass too heavy for launch";
+                launchStatus.innerHTML = "Shuttle Not Ready for Launch";
+                launchStatus.style.color = "#C7254E";
+                event.preventDefault();
+                faultyItems.setAttribute("style", "visibility: visible"); 
+
+            } else if (fuelLevel.value < 10000) {
+                document.getElementById("fuelStatus").innerHTML = "Fuel level too low for launch";
+                launchStatus.innerHTML = "Shuttle Not Ready for Launch";
+                launchStatus.style.color = "#C7254E";
+                event.preventDefault();
+                faultyItems.setAttribute("style", "visibility: visible"); 
+
+            } else {
+                launchStatus.innerHTML = "Shuttle Ready for Launch";
+                launchStatus.style.color = "green";
+                event.preventDefault();
+            }
         }
-        if (!isNaN(copilotName.value)) {
-            alert("Invalid input. Please write a name.");
-            event.preventDefault();
-        }
-        if (isNaN(fuelLevel.value)) {
-            alert("Invalid input. Please submit a valid number.");
-            event.preventDefault();
-        }
-        if (isNaN(cargoMass.value)) {
-            alert("Invalid input. Please submit a valid number.");
-            event. preventDefault();
-        }
-        document.querySelector("#faultyItems").innerHTML {
-            visibility: visible;
-        }
-        document.querySelector("pilotStatus").innerHTML = ` {{pilotName}} is ready.`;
-        document.getElementById("copilotStatus").innerHTML = `{{copilotName}} is ready.`;
-        if (fuelLevel < 10000) {
-            document.getElementById("fuelStatus").innerHTML = `Shuttle not ready for launch.`, color = red;
-        }
-        if (cargoMass > 10000) {
-            document.getElementById("cargoStatus").innerHTML = `Shuttle not ready for launch.`, color = red;
-        }
+
+        document.getElementById("pilotStatus").innerHTML = `Pilot ${pilotName.value} is ready`;
+        document.getElementById("copilotStatus").innerHTML = `Co-Pilot ${copilotName.value} is ready`;
+
+        
         
     });
    
